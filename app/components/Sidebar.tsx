@@ -106,13 +106,13 @@ export default function Sidebar() {
 
   return (
     <div 
-      className="h-full bg-gray-900 border-r border-gray-800 flex flex-col overflow-hidden text-gray-300 font-sans relative shrink-0"
-      style={{ width: sidebarWidth }}
+      className="h-full bg-gray-900 border-r border-gray-800 flex flex-col overflow-hidden text-gray-300 font-sans relative shrink-0 w-full flex-1 md:flex-none md:w-[var(--sidebar-width)]"
+      style={{ '--sidebar-width': `${sidebarWidth}px` } as React.CSSProperties}
     >
       
       {/* Resizer Handle */}
       <div 
-        className="absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500/50 active:bg-blue-500 transition-colors z-50 group"
+        className="hidden md:block absolute top-0 right-0 w-1 h-full cursor-col-resize hover:bg-blue-500/50 active:bg-blue-500 transition-colors z-50 group"
         onMouseDown={handleMouseDown}
       >
         <div className={`absolute top-1/2 -translate-y-1/2 -left-1.5 w-4 h-12 bg-gray-700/80 backdrop-blur border border-gray-600 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 ${isResizing ? 'opacity-100 bg-blue-500 border-blue-400' : ''} transition-opacity shadow-lg`}>

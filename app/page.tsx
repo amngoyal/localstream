@@ -25,9 +25,9 @@ export default function LandingPage() {
           <span className="text-xl font-bold text-white tracking-tight">LocalStream</span>
         </div>
         <div className="flex items-center gap-6">
-          <a href="https://github.com/amngoyal/localstream" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
+          <a href="https://github.com/amngoyal/localstream" target="_blank" rel="noopener noreferrer" className="hidden sm:flex text-gray-400 hover:text-white transition-colors items-center gap-2 text-sm font-medium">
             <Code size={18} />
-            <span className="hidden sm:inline">Star on GitHub</span>
+            <span>Star on GitHub</span>
           </a>
           <button 
             onClick={() => router.push('/my-library')}

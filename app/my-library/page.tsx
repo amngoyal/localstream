@@ -123,9 +123,9 @@ export default function MyLibrary() {
         </header>
 
         {/* Global Privacy Banner */}
-        <div className="mb-6 flex items-center justify-center gap-2 text-sm text-cyan-400/90 bg-cyan-900/20 py-3 px-4 rounded-xl border border-cyan-500/20 shadow-lg shadow-cyan-900/10">
-          <Shield size={18} className="text-cyan-400" />
-          <span><strong>100% Local & Private.</strong> Your files never leave your device and are never uploaded to the internet.</span>
+        <div className="mb-6 flex items-start sm:items-center justify-center gap-3 text-left text-sm text-cyan-400/90 bg-cyan-900/20 py-3 px-4 rounded-xl border border-cyan-500/20 shadow-lg shadow-cyan-900/10">
+          <Shield size={18} className="text-cyan-400 shrink-0 mt-0.5 sm:mt-0" />
+          <span className="max-w-2xl"><strong>100% Local & Private.</strong> Your files never leave your device and are never uploaded to the internet.</span>
         </div>
 
         {dbLoading ? (

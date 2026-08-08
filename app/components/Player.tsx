@@ -293,7 +293,7 @@ export default function Player() {
   return (
     <div 
       ref={containerRef}
-      className="flex-1 flex flex-col bg-black h-full relative group overflow-hidden"
+      className="w-full aspect-video md:aspect-auto md:flex-1 shrink-0 md:h-full flex flex-col bg-black relative group overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
@@ -338,50 +338,50 @@ export default function Player() {
         <div className={`absolute inset-0 flex flex-col justify-between transition-opacity duration-500 ${showControls || !isPlaying ? 'opacity-100' : 'opacity-0'} pointer-events-none`}>
           
           {/* Top Header Gradient */}
-          <div className="p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto flex justify-between items-start">
-            <h2 className="text-white text-2xl font-medium drop-shadow-md truncate max-w-2xl">
+          <div className="p-4 sm:p-6 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto flex justify-between items-start">
+            <h2 className="text-white text-lg sm:text-2xl font-medium drop-shadow-md truncate max-w-[200px] sm:max-w-2xl">
               {selectedItem.name.replace(/^(\d+\.\d+\s*-?\s*)/, '').replace(/\.(mp4|pdf)$/i, '')}
             </h2>
             <div className="flex gap-2">
               <button 
                 onClick={handleStartNote}
-                className="bg-black/40 hover:bg-cyan-600/80 text-white backdrop-blur-md px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 border border-white/10 transition-colors shadow-lg"
+                className="bg-black/40 hover:bg-cyan-600/80 text-white backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 sm:gap-2 border border-white/10 transition-colors shadow-lg"
               >
-                <MessageSquarePlus size={16} /> Add Note
+                <MessageSquarePlus size={16} /> <span className="hidden sm:inline">Add Note</span>
               </button>
             </div>
           </div>
 
           {/* Center Controls (Play/Pause, Rewind, Forward) */}
-          <div className={`flex items-center justify-center gap-8 md:gap-16 flex-1 pointer-events-none transition-all duration-300 ${showControls || !isPlaying ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}>
+          <div className={`flex items-center justify-center gap-6 sm:gap-12 md:gap-16 flex-1 pointer-events-none transition-all duration-300 ${showControls || !isPlaying ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}>
             
             <button 
               onClick={(e) => { e.stopPropagation(); skipBackward(); }}
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
+              className="w-12 h-12 sm:w-16 sm:h-16 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
               title="Rewind 10s"
             >
-              <RotateCcw size={28} className="text-white group-hover:text-cyan-400" />
-              <span className="absolute text-[10px] font-bold text-white group-hover:text-cyan-400 mt-1">10</span>
+              <RotateCcw className="text-white group-hover:text-cyan-400 w-6 h-6 sm:w-7 sm:h-7" />
+              <span className="absolute text-[8px] sm:text-[10px] font-bold text-white group-hover:text-cyan-400 mt-1 sm:mt-1">10</span>
             </button>
 
             <button 
               onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              className="w-24 h-24 bg-cyan-500/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.3)] hover:scale-110 hover:bg-cyan-500/30 transition-all pointer-events-auto group"
+              className="w-16 h-16 sm:w-24 sm:h-24 bg-cyan-500/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.3)] hover:scale-110 hover:bg-cyan-500/30 transition-all pointer-events-auto group"
             >
               {isPlaying ? (
-                <Pause size={40} className="text-cyan-50 group-hover:text-white transition-colors" />
+                <Pause className="text-cyan-50 group-hover:text-white transition-colors w-8 h-8 sm:w-10 sm:h-10" />
               ) : (
-                <Play size={40} className="text-cyan-50 translate-x-1 group-hover:text-white transition-colors" />
+                <Play className="text-cyan-50 translate-x-1 group-hover:text-white transition-colors w-8 h-8 sm:w-10 sm:h-10" />
               )}
             </button>
 
             <button 
               onClick={(e) => { e.stopPropagation(); skipForward(); }}
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
+              className="w-12 h-12 sm:w-16 sm:h-16 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
               title="Forward 10s"
             >
-              <RotateCw size={28} className="text-white group-hover:text-cyan-400" />
-              <span className="absolute text-[10px] font-bold text-white group-hover:text-cyan-400 mt-1">10</span>
+              <RotateCw className="text-white group-hover:text-cyan-400 w-6 h-6 sm:w-7 sm:h-7" />
+              <span className="absolute text-[8px] sm:text-[10px] font-bold text-white group-hover:text-cyan-400 mt-1 sm:mt-1">10</span>
             </button>
 
           </div>
@@ -420,7 +420,7 @@ export default function Player() {
                   <SkipForward size={20} />
                 </button>
                 
-                <div className="flex items-center gap-2 group/volume relative ml-2">
+                <div className="hidden sm:flex items-center gap-2 group/volume relative ml-2">
                   <button onClick={toggleMute} className="hover:text-cyan-400 transition-colors">
                     {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
                   </button>

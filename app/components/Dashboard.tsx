@@ -39,8 +39,8 @@ export default function Dashboard() {
   const timeRemaining = Math.max(0, totalDuration - watchedDuration);
 
   return (
-    <div className="bg-gray-900 border-b border-gray-800 p-4 px-6 flex items-center justify-between text-white shrink-0">
-      <div className="flex items-center gap-6">
+    <div className="bg-gray-900 border-b border-gray-800 p-3 sm:p-4 px-3 sm:px-6 flex items-center justify-between text-white shrink-0 gap-2 overflow-x-auto custom-scrollbar">
+      <div className="flex items-center gap-3 sm:gap-6 shrink-0">
         <button 
           onClick={() => {
             setActiveCourseId(null, null); // clear store
@@ -52,18 +52,18 @@ export default function Dashboard() {
           <ArrowLeft size={20} />
         </button>
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <h1 className="text-base sm:text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">
               LocalStream
             </h1>
             <button 
               onClick={() => setIsEditorOpen(true)}
               className="flex items-center gap-1.5 px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white rounded-md text-xs font-medium transition-colors border border-gray-700"
             >
-              <Edit2 size={12} /> Edit Layout
+              <Edit2 size={12} /> <span className="hidden sm:inline">Edit Layout</span>
             </button>
           </div>
-          <p className="text-xs text-gray-500 font-medium tracking-wide uppercase mt-0.5">Local Environment</p>
+          <p className="hidden sm:block text-xs text-gray-500 font-medium tracking-wide uppercase mt-0.5">Local Environment</p>
         </div>
         
         <div className="h-8 w-px bg-gray-800 mx-2 hidden sm:block"></div>
@@ -87,7 +87,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="flex items-center gap-4 w-48 sm:w-64">
+      <div className="flex items-center gap-4 w-32 sm:w-64 shrink-0">
         <div className="flex-1">
           <div className="flex justify-between text-xs mb-1.5">
             <span className="text-gray-400 font-medium">Overall Progress</span>

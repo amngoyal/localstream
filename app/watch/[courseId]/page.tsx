@@ -153,7 +153,7 @@ export default function WatchPage() {
   return (
     <main className="h-screen w-screen flex flex-col bg-black overflow-hidden font-sans">
       <Dashboard />
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col-reverse md:flex-row overflow-hidden">
         <Sidebar />
         <Player />
       </div>

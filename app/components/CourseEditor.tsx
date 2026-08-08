@@ -216,20 +216,20 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
                       setDraggedItem(null);
                     }}
                     onDragEnd={() => setDraggedItem(null)}
-                    className={`flex items-center gap-4 p-3 px-5 hover:bg-gray-700/30 transition-colors group cursor-grab active:cursor-grabbing ${draggedItem?.itemId === item.id ? 'opacity-40 bg-blue-900/20' : ''}`}
+                    className={`flex items-center gap-2 sm:gap-4 p-3 px-3 sm:px-5 hover:bg-gray-700/30 transition-colors group cursor-grab active:cursor-grabbing ${draggedItem?.itemId === item.id ? 'opacity-40 bg-blue-900/20' : ''}`}
                   >
-                    <GripVertical size={16} className="text-gray-600 group-hover:text-gray-400" />
+                    <GripVertical size={16} className="text-gray-600 group-hover:text-gray-400 shrink-0" />
                     
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 pr-2">
                       <p className="text-sm text-gray-300 truncate">{item.name}</p>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs text-gray-500">Move to:</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                      <span className="hidden sm:inline text-xs text-gray-500">Move to:</span>
                       <select 
                         value={mod.id}
                         onChange={(e) => moveItem(mod.id, item.id, e.target.value)}
-                        className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500 max-w-[150px]"
+                        className="bg-gray-900 border border-gray-700 rounded px-1.5 sm:px-2 py-1 text-xs text-white focus:outline-none focus:border-blue-500 w-20 sm:w-auto sm:max-w-[150px] truncate"
                       >
                         {localModules.map(m => (
                           <option key={m.id} value={m.id}>{m.title}</option>

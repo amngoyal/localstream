@@ -4,6 +4,10 @@
   <strong>Turn your scattered local video files into a gorgeous, premium streaming platform right in your browser.</strong>
 </p>
 
+<p align="center">
+  <a href="https://localstream.vercel.app" target="_blank"><strong>👉 Try the Live Demo here</strong></a>
+</p>
+
 ## Overview
 
 LocalStream is a 100% free and open-source local video player built for developers, students, and course-bingers. It leverages the modern File System Access API to stream videos directly from your local folders into a beautifully designed, Netflix-like interface.
@@ -15,6 +19,7 @@ No accounts, no server setup, no internet required.
 - **100% Local & Private**: Your files never leave your computer. Everything stays on your local machine.
 - **Automatic Progress Tracking**: Never lose your spot in a 2-hour tutorial again. Your watch progress is saved instantly.
 - **Portable Metadata**: Layout changes, notes, and progress can be stored right inside your course folder. Move your folder to a new computer, and everything goes with it.
+- **Fully Mobile Responsive**: Designed to look incredible on any device. Watch on your desktop or easily browse your courses on your phone with touch-friendly controls.
 - **Beautiful UI**: Glassmorphism, smooth animations, and a distraction-free cinematic player.
 
 ## Getting Started

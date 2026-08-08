@@ -13,8 +13,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LocalStream",
-  description: "The ultimate local video tracker and player for courses and web series.",
+  title: {
+    default: "LocalStream | The Ultimate Local Video Player",
+    template: "%s | LocalStream",
+  },
+  description: "Turn your scattered local video files into a gorgeous, premium streaming platform right in your browser. 100% free, private, and no accounts required.",
+  keywords: ["video player", "local stream", "course player", "offline video player", "browser video player", "file system access api", "offline streaming"],
+  authors: [{ name: "Aman Goyal", url: "https://github.com/amngoyal" }],
+  creator: "Aman Goyal",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://localstream.vercel.app/",
+    title: "LocalStream | The Ultimate Local Video Player",
+    description: "Turn your scattered local video files into a gorgeous, premium streaming platform right in your browser.",
+    siteName: "LocalStream",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "LocalStream | The Ultimate Local Video Player",
+    description: "Turn your scattered local video files into a gorgeous, premium streaming platform right in your browser.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

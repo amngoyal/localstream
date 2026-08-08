@@ -32,6 +32,12 @@ export default function MyLibrary() {
   const handleAddCourse = async () => {
     try {
       setIsLoading(true);
+      
+      // @ts-ignore
+      if (!('showDirectoryPicker' in window)) {
+        throw new Error("Your browser does not support the File System Access API. Please use a desktop browser like Chrome or Edge.");
+      }
+
       // @ts-ignore
       const dirHandle = await window.showDirectoryPicker();
       
@@ -61,8 +67,11 @@ export default function MyLibrary() {
       
       setSavedCourses(await getSavedCourses());
       setIsLoading(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error selecting folder", err);
+      if (err.name !== 'AbortError') {
+         alert(`Failed to add folder: ${err.message || "Unknown error"}. If you are on Brave, please disable Shields for this site, as it blocks local file access.`);
+      }
       setIsLoading(false);
     }
   };

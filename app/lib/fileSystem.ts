@@ -204,12 +204,16 @@ export const parseDirectory = async (dirHandle: FileSystemDirectoryHandle, autoS
 
 export const extractDurationsInBackground = async (modules: CourseModule[]) => {
   const store = useCourseStore.getState();
+  const activeCourseId = store.activeCourseId;
+  if (!activeCourseId) return;
+  
+  const courseProgress = store.progress[activeCourseId] || {};
   
   for (const mod of modules) {
     for (const item of mod.items) {
       if (item.type === 'video') {
         // Check if we already have duration in progress store
-        const existingDuration = store.progress[item.id]?.duration;
+        const existingDuration = courseProgress[item.id]?.duration;
         if (!existingDuration || existingDuration === 0) {
           try {
             const file = await (item.handle as any).getFile();

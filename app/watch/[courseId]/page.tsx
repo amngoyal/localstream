@@ -70,7 +70,7 @@ export default function WatchPage() {
       
       const state = useCourseStore.getState();
       if (!state.selectedItemId && modules.length > 0) {
-        let itemToSelect = state.lastOpenedItemIds?.[courseId];
+        let itemToSelect: string | null = state.lastOpenedItemIds?.[courseId] || null;
         
         // Verify the item still exists in the modules, otherwise fallback to first
         if (!itemToSelect || !modules.some(m => m.items.some(i => i.id === itemToSelect))) {

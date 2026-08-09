@@ -293,7 +293,7 @@ export default function Player() {
   return (
     <div 
       ref={containerRef}
-      className="w-full aspect-video md:aspect-auto md:flex-1 shrink-0 md:h-full flex flex-col bg-black relative group overflow-hidden"
+      className="w-full h-full flex-1 shrink-0 flex flex-col bg-black relative group overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >

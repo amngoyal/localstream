@@ -3,11 +3,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useCourseStore } from '../lib/courseStore';
 import { formatTime } from '../lib/utils';
-import { CheckCircle2, Circle, FileText, PlayCircle, ChevronDown, ChevronRight, Search, List, Edit3, Trash2, Edit2, Save, X } from 'lucide-react';
-import { saveCourseMetadata, parseDirectory } from '../lib/fileSystem';
+import { CheckCircle2, Circle, FileText, PlayCircle, ChevronDown, ChevronRight, Search, List, Edit3, Trash2 } from 'lucide-react';
 
 export default function Sidebar() {
-  const { activeCourseId, activeCourseHandle, modules, setModules, selectedItemId, setSelectedItemId, progress, notes, addNote, removeNote, setIsLoading, sidebarWidth, setSidebarWidth } = useCourseStore();
+  const { activeCourseId, modules, selectedItemId, setSelectedItemId, progress, notes, removeNote, sidebarWidth, setSidebarWidth } = useCourseStore();
   
   const [isResizing, setIsResizing] = useState(false);
   
@@ -28,6 +27,7 @@ export default function Sidebar() {
     if (selectedItemId) {
       const activeModule = modules.find(m => m.items.some(i => i.id === selectedItemId));
       if (activeModule) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setExpandedModules(prev => {
           if (!prev[activeModule.id]) {
             return { ...prev, [activeModule.id]: true };

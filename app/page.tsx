@@ -3,7 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { PlaySquare, FolderOpen, Shield, Clock, Zap, ArrowRight, Code, Play } from 'lucide-react';
-import Link from 'next/link';
+
 import { useRouter } from 'next/navigation';
 
 export default function LandingPage() {
@@ -121,6 +121,7 @@ export default function LandingPage() {
                   {/* Main Video Area */}
                   <div className="flex-1 h-full flex flex-col relative bg-black">
                      <div className="flex-1 relative overflow-hidden flex items-center justify-center bg-black pb-16">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src="/hero-video-bg.png" className="absolute inset-0 w-full h-full object-cover object-center opacity-80" alt="Video content" />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
                         

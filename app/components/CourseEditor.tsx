@@ -11,9 +11,9 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
   const [localModules, setLocalModules] = useState<CourseModule[]>([]);
   const [draggedItem, setDraggedItem] = useState<{ moduleId: string, itemId: string } | null>(null);
 
-  // Clone modules when opening
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLocalModules(JSON.parse(JSON.stringify(modules)));
     }
   }, [isOpen, modules]);
@@ -94,10 +94,10 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
       setIsLoading(true);
 
       // Verify readwrite permission (just in case they opened an old course)
-      // @ts-ignore
+      // @ts-expect-error File System Access API types are not fully standard
       if (await activeCourseHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') {
         alert("We need permission to save the new layout to your folder. Please grant it in the next prompt.");
-        // @ts-ignore
+        // @ts-expect-error File System Access API types are not fully standard
         const perm = await activeCourseHandle.requestPermission({ mode: 'readwrite' });
         if (perm !== 'granted') {
           throw new Error("Permission denied");

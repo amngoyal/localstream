@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { CourseModule, AllCourseProgress, AllNotes, Note, Course } from './types';
+import { CourseModule, AllCourseProgress, AllNotes, Note } from './types';
 
 interface CourseState {
   activeCourseId: string | null;
@@ -30,7 +30,7 @@ interface CourseState {
 
 export const useCourseStore = create<CourseState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       activeCourseId: null,
       activeCourseHandle: null,
       modules: [],

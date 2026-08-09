@@ -17,18 +17,16 @@ export const saveCourseMetadata = async (
 ) => {
   try {
     // Request readwrite permission if not granted
-    // @ts-ignore
+    // @ts-expect-error File System Access API
     if (await dirHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') {
-      // @ts-ignore
+      // @ts-expect-error File System Access API
       const permission = await dirHandle.requestPermission({ mode: 'readwrite' });
       if (permission !== 'granted') {
         throw new Error("Permission denied to write metadata");
       }
     }
     
-    // @ts-ignore
     const fileHandle = await dirHandle.getFileHandle('course-metadata.json', { create: true });
-    // @ts-ignore
     const writable = await fileHandle.createWritable();
     await writable.write(JSON.stringify(metadata, null, 2));
     await writable.close();
@@ -64,18 +62,17 @@ export const parseDirectory = async (dirHandle: FileSystemDirectoryHandle, autoS
   // Try to load metadata
   let metadata: CourseMetadata | null = null;
   try {
-    // @ts-ignore
     const fileHandle = await dirHandle.getFileHandle('course-metadata.json');
-    // @ts-ignore
     const file = await fileHandle.getFile();
     const text = await file.text();
     metadata = JSON.parse(text);
-  } catch (err) {
+  } catch {
     // File doesn't exist or isn't readable
   }
 
   // Recursive function to walk directories
   async function walk(handle: FileSystemDirectoryHandle, currentPath: string = '') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     for await (const entry of (handle as any).values()) {
       if (entry.kind === 'file') {
         const name = entry.name.toLowerCase();
@@ -216,6 +213,7 @@ export const extractDurationsInBackground = async (modules: CourseModule[]) => {
         const existingDuration = courseProgress[item.id]?.duration;
         if (!existingDuration || existingDuration === 0) {
           try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const file = await (item.handle as any).getFile();
             const duration = await getVideoDuration(file);
             store.updateDuration(item.id, duration);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useCourseStore } from '../../lib/courseStore';
 import { parseDirectory, extractDurationsInBackground } from '../../lib/fileSystem';
@@ -15,7 +15,6 @@ export default function WatchPage() {
   const courseId = decodeURIComponent(params.courseId as string);
   
   const { 
-    activeCourseId,
     setActiveCourseId,
     setModules, 
     setIsLoading,
@@ -26,46 +25,11 @@ export default function WatchPage() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const initializeCourse = async () => {
-      try {
-        setIsInitializing(true);
-        const courses = await getSavedCourses();
-        const course = courses.find(c => c.id === courseId);
-        
-        if (!course || !course.handle) {
-          setError("Course not found in your library.");
-          setIsInitializing(false);
-          return;
-        }
-
-        // Verify permission implicitly first
-        // @ts-ignore
-        const permStatus = await course.handle.queryPermission({ mode: 'read' });
-        if (permStatus === 'granted') {
-          await loadCourse(course.handle);
-        } else {
-          // Need to ask for permission via a user interaction
-          setHasPermission(false);
-          setIsInitializing(false);
-        }
-      } catch (e) {
-        console.error(e);
-        setError("An error occurred loading the course.");
-        setIsInitializing(false);
-      }
-    };
-
-    if (courseId) {
-      initializeCourse();
-    }
-  }, [courseId]);
-
-  const loadCourse = async (handle: any) => {
+  const loadCourse = useCallback(async (handle: unknown) => {
     try {
       setIsLoading(true);
-      setActiveCourseId(courseId, handle);
-      const modules = await parseDirectory(handle);
+      setActiveCourseId(courseId, handle as FileSystemDirectoryHandle);
+      const modules = await parseDirectory(handle as FileSystemDirectoryHandle);
       setModules(modules);
       
       const state = useCourseStore.getState();
@@ -85,13 +49,50 @@ export default function WatchPage() {
       setHasPermission(true);
       setIsInitializing(false);
       extractDurationsInBackground(modules);
-    } catch (e) {
+    } catch {
        setError("Failed to load course contents.");
        setIsInitializing(false);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [courseId, setActiveCourseId, setIsLoading, setModules, setSelectedItemId]);
+
+  useEffect(() => {
+    const initializeCourse = async () => {
+      try {
+        setIsInitializing(true);
+        const courses = await getSavedCourses();
+        const course = courses.find(c => c.id === courseId);
+        
+        if (!course || !course.handle) {
+          setError("Course not found in your library.");
+          setIsInitializing(false);
+          return;
+        }
+
+        // Verify permission implicitly first
+        // @ts-expect-error File System Access API
+        const permStatus = await course.handle.queryPermission({ mode: 'read' });
+        if (permStatus === 'granted') {
+          await loadCourse(course.handle);
+        } else {
+          // Need to ask for permission via a user interaction
+          setHasPermission(false);
+          setIsInitializing(false);
+        }
+      } catch (e) {
+        console.error(e);
+        setError("An error occurred loading the course.");
+        setIsInitializing(false);
+      }
+    };
+
+    if (courseId) {
+      initializeCourse();
+    }
+  }, [courseId, loadCourse]);
+
+
 
   const requestPermission = async () => {
     try {
@@ -99,7 +100,7 @@ export default function WatchPage() {
       const course = courses.find(c => c.id === courseId);
       if (!course) return;
 
-      // @ts-ignore
+      // @ts-expect-error File System Access API
       const permission = await course.handle.requestPermission({ mode: 'read' });
       if (permission === 'granted') {
         await loadCourse(course.handle);
@@ -117,7 +118,7 @@ export default function WatchPage() {
          </div>
          <h1 className="text-2xl font-bold mb-4">{error}</h1>
          <p className="text-gray-400 max-w-md mx-auto mb-8">
-           Since LocalStream runs 100% locally, your courses are saved in your browser's local storage. If you are in Incognito mode or a different browser, you'll need to go back and add the folder again.
+           Since LocalStream runs 100% locally, your courses are saved in your browser&apos;s local storage. If you are in Incognito mode or a different browser, you&apos;ll need to go back and add the folder again.
          </p>
          <button onClick={() => router.push('/my-library')} className="px-6 py-3 bg-gray-800 rounded-xl hover:bg-gray-700 transition-colors">Back to Library</button>
       </div>

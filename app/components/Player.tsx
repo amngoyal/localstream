@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useCourseStore } from '../lib/courseStore';
 import { FileText, Loader2, Settings, MessageSquarePlus, MonitorPlay, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Maximize, Minimize, RotateCcw, RotateCw } from 'lucide-react';
 
@@ -48,6 +48,7 @@ export default function Player() {
 
   useEffect(() => {
     if (!selectedItem) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setObjectUrl(null);
       return;
     }
@@ -57,7 +58,6 @@ export default function Player() {
 
     const loadFile = async () => {
       try {
-        // @ts-ignore
         const file = await selectedItem.handle.getFile();
         const url = URL.createObjectURL(file);
         if (isMounted) {
@@ -79,7 +79,8 @@ export default function Player() {
       isMounted = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [selectedItem?.id]); 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedItem, markCompleted]); 
 
   // Handle video tracking, speed, and events
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function Player() {
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('ended', handleEnded);
     };
-  }, [selectedItem?.id, objectUrl, updateProgress, playbackSpeed, nextItemId, setSelectedItemId]);
+  }, [selectedItem, objectUrl, updateProgress, playbackSpeed, nextItemId, setSelectedItemId]);
 
   // Restore playback position and handle seek event
   useEffect(() => {
@@ -123,9 +124,10 @@ export default function Player() {
       }
     };
     
-    const handleCustomSeek = (e: any) => {
-      if (e.detail && typeof e.detail.time === 'number') {
-        video.currentTime = e.detail.time;
+    const handleCustomSeek = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && typeof customEvent.detail.time === 'number') {
+        video.currentTime = customEvent.detail.time;
         video.play().catch(() => {});
       }
     };
@@ -137,7 +139,18 @@ export default function Player() {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
       window.removeEventListener('seek-to', handleCustomSeek);
     };
-  }, [selectedItem?.id, objectUrl]);
+  }, [selectedItem, objectUrl]);
+
+  const toggleFullscreen = () => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
 
   // Global Keyboard Shortcuts
   useEffect(() => {
@@ -193,7 +206,7 @@ export default function Player() {
       } else {
         await videoRef.current.requestPictureInPicture();
       }
-    } catch (err) {}
+    } catch {}
   };
 
   const handleStartNote = () => {
@@ -251,17 +264,6 @@ export default function Player() {
 
   const skipBackward = () => {
     if (videoRef.current) videoRef.current.currentTime -= 10;
-  };
-
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
   };
 
   const handleMouseMove = () => {

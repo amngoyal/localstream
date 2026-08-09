@@ -33,20 +33,17 @@ export default function MyLibrary() {
     try {
       setIsLoading(true);
       
-      // @ts-ignore
       if (!('showDirectoryPicker' in window)) {
         throw new Error("Your browser does not support the File System Access API. Please use a desktop browser like Chrome or Edge.");
       }
 
-      // @ts-ignore
+      // @ts-expect-error File System Access API
       const dirHandle = await window.showDirectoryPicker();
       
       alert("To allow you to fully customize your layout, LocalStream needs permission to save a small configuration file inside your folder. Please click 'Save Changes' or 'Allow' on the next prompt.");
       
       // Request readwrite for the new course
-      // @ts-ignore
       if (await dirHandle.queryPermission({ mode: 'readwrite' }) !== 'granted') {
-        // @ts-ignore
         const permission = await dirHandle.requestPermission({ mode: 'readwrite' });
         if (permission !== 'granted') {
           throw new Error("Permission denied. We cannot manage your course layout.");
@@ -67,9 +64,9 @@ export default function MyLibrary() {
       
       setSavedCourses(await getSavedCourses());
       setIsLoading(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error selecting folder", err);
-      if (err.name !== 'AbortError') {
+      if (err instanceof Error && err.name !== 'AbortError') {
          alert(`Failed to add folder: ${err.message || "Unknown error"}. If you are on Brave, please disable Shields for this site, as it blocks local file access.`);
       }
       setIsLoading(false);

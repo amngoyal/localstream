@@ -167,7 +167,8 @@ export default function Sidebar() {
               {filteredModules.map((module) => {
                 const moduleProgress = progress[activeCourseId || ''] || {};
                 const moduleDuration = module.items.reduce((acc, item) => acc + (moduleProgress[item.id]?.duration || 0), 0);
-                const isModuleCompleted = module.items.length > 0 && module.items.every(item => moduleProgress[item.id]?.completed);
+                const videoItems = module.items.filter(item => item.type !== 'pdf');
+                const isModuleCompleted = videoItems.length > 0 && videoItems.every(item => moduleProgress[item.id]?.completed);
 
                 return (
                   <div key={module.id} className="bg-gray-800/30 rounded-xl overflow-hidden border border-gray-800/50">
@@ -216,10 +217,14 @@ export default function Sidebar() {
                               )}
                               
                               <div className="flex-shrink-0 mt-0.5">
-                                {isCompleted ? (
-                                  <CheckCircle2 size={18} className="text-green-500" />
+                                {item.type === 'video' ? (
+                                  isCompleted ? (
+                                    <CheckCircle2 size={18} className="text-green-500" />
+                                  ) : (
+                                    <PlayCircle size={18} className="text-gray-500 group-hover:text-gray-400" />
+                                  )
                                 ) : (
-                                  <Circle size={18} className="text-gray-500 group-hover:text-gray-400" />
+                                  <FileText size={18} className="text-red-400 group-hover:text-red-300" />
                                 )}
                               </div>
                               

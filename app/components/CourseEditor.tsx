@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCourseStore } from '../lib/courseStore';
 import { saveCourseMetadata, parseDirectory, CourseMetadata } from '../lib/fileSystem';
-import { X, ArrowUp, ArrowDown, Save, GripVertical } from 'lucide-react';
+import { X, ArrowUp, ArrowDown, Save, GripVertical, Trash2 } from 'lucide-react';
 import { CourseModule } from '../lib/types';
 
 export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
@@ -34,6 +34,35 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
       copy[targetIndex] = temp;
       return copy;
     });
+  };
+
+  const deleteModule = (moduleId: string) => {
+    if (window.confirm("Are you sure you want to delete this module? Any items inside will be moved to 'Uncategorized Files'.")) {
+      setLocalModules(prev => {
+        const moduleToDelete = prev.find(m => m.id === moduleId);
+        if (!moduleToDelete) return prev;
+        
+        let newModules = prev.filter(m => m.id !== moduleId);
+        
+        if (moduleToDelete.items.length > 0) {
+          const uncategorizedIndex = newModules.findIndex(m => m.id === 'new-files');
+          if (uncategorizedIndex >= 0) {
+            newModules[uncategorizedIndex] = {
+              ...newModules[uncategorizedIndex],
+              items: [...newModules[uncategorizedIndex].items, ...moduleToDelete.items]
+            };
+          } else {
+            newModules.push({
+              id: 'new-files',
+              title: 'Uncategorized Files',
+              items: [...moduleToDelete.items]
+            });
+          }
+        }
+        
+        return newModules;
+      });
+    }
   };
 
   const moveItem = (sourceModuleId: string, itemId: string, targetModuleId: string) => {
@@ -149,7 +178,7 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
         </div>
 
         {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gray-900/50 space-y-6">
+        <div id="editor-scroll-container" className="flex-1 overflow-y-auto p-6 bg-gray-900/50 space-y-6">
           {localModules.map((mod, modIdx) => (
             <div key={mod.id} className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden shadow-sm">
               
@@ -180,6 +209,14 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
                     className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-semibold w-full focus:outline-none focus:border-blue-500 transition-colors"
                   />
                 </div>
+                
+                <button 
+                  onClick={() => deleteModule(mod.id)}
+                  className="p-2 text-gray-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors mt-5"
+                  title="Delete Module"
+                >
+                  <Trash2 size={18} />
+                </button>
               </div>
 
               {/* Items List */}
@@ -249,20 +286,38 @@ export default function CourseEditor({ isOpen, onClose }: { isOpen: boolean, onC
         </div>
 
         {/* Footer */}
-        <div className="p-4 px-6 border-t border-gray-800 bg-gray-950 flex justify-end gap-3">
+        <div className="p-4 px-6 border-t border-gray-800 bg-gray-950 flex justify-between items-center gap-3">
           <button 
-            onClick={onClose}
-            className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+            onClick={() => {
+              setLocalModules(prev => [...prev, {
+                id: `module-${Date.now()}`,
+                title: 'New Module',
+                items: []
+              }]);
+              setTimeout(() => {
+                const el = document.getElementById('editor-scroll-container');
+                if (el) el.scrollTop = el.scrollHeight;
+              }, 100);
+            }}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-blue-400 hover:text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 transition-colors border border-blue-500/20"
           >
-            Cancel
+            + New Module
           </button>
-          <button 
-            onClick={handleSave}
-            className="px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-2 transition-colors shadow-lg shadow-blue-900/20"
-          >
-            <Save size={16} />
-            Save Changes
-          </button>
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleSave}
+              className="px-5 py-2.5 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-2 transition-colors shadow-lg shadow-blue-900/20"
+            >
+              <Save size={16} />
+              Save Changes
+            </button>
+          </div>
         </div>
 
       </div>

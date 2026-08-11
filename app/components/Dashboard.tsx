@@ -20,6 +20,7 @@ export default function Dashboard() {
   // Calculate totals based on store state
   modules.forEach(mod => {
     mod.items.forEach(item => {
+      if (item.type === 'pdf') return;
       totalItems++;
       const itemProgress = progress[activeCourseId || '']?.[item.id];
       

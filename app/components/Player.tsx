@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useCourseStore } from '../lib/courseStore';
-import { FileText, Loader2, Settings, MessageSquarePlus, MonitorPlay, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Maximize, Minimize, ArrowLeft, RotateCcw, RotateCw, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, Loader2, Settings, MessageSquarePlus, MonitorPlay, Play, Pause, SkipBack, SkipForward, Volume, Volume1, Volume2, VolumeX, Maximize, Minimize, ArrowLeft, RotateCcw, RotateCw, X, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { CourseItem } from '../lib/types';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -38,6 +38,9 @@ export default function Player() {
   const [showControls, setShowControls] = useState(true);
   const [isUpNextDismissed, setIsUpNextDismissed] = useState(false);
   const [showRemainingTime, setShowRemainingTime] = useState(false);
+  const [showVolumePopup, setShowVolumePopup] = useState(false);
+  const [volumePopupKey, setVolumePopupKey] = useState(0);
+  const volumePopupTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Find selected item
   let selectedItem: CourseItem | null = null;
@@ -113,9 +116,6 @@ export default function Player() {
         if (isMounted) {
           setObjectUrl(url);
           setIsLoading(false);
-          if (selectedItem!.type === 'pdf') {
-            markCompleted(selectedItem!.id);
-          }
         }
       } catch (err) {
         console.error("Failed to load file", err);
@@ -231,6 +231,22 @@ export default function Player() {
         case 'arrowleft':
           e.preventDefault();
           video.currentTime = Math.max(0, video.currentTime - 10);
+          break;
+        case 'arrowup':
+          e.preventDefault();
+          video.volume = Math.min(1, video.volume + 0.05);
+          setShowVolumePopup(true);
+          setVolumePopupKey(prev => prev + 1);
+          if (volumePopupTimeoutRef.current) clearTimeout(volumePopupTimeoutRef.current);
+          volumePopupTimeoutRef.current = setTimeout(() => setShowVolumePopup(false), 1500);
+          break;
+        case 'arrowdown':
+          e.preventDefault();
+          video.volume = Math.max(0, video.volume - 0.05);
+          setShowVolumePopup(true);
+          setVolumePopupKey(prev => prev + 1);
+          if (volumePopupTimeoutRef.current) clearTimeout(volumePopupTimeoutRef.current);
+          volumePopupTimeoutRef.current = setTimeout(() => setShowVolumePopup(false), 1500);
           break;
         case 'f':
           e.preventDefault();
@@ -487,12 +503,24 @@ export default function Player() {
             onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
             onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
             onVolumeChange={() => {
-              setVolume(videoRef.current?.volume || 1);
-              setIsMuted(videoRef.current?.muted || false);
+              setVolume(videoRef.current?.volume ?? 1);
+              setIsMuted(videoRef.current?.muted ?? false);
             }}
           />
         )}
       </div>
+
+      {/* Volume Popup Overlay */}
+      {showVolumePopup && (
+        <div key={volumePopupKey} className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-50 animate-in fade-in duration-200">
+          <div className="absolute top-12 bg-black/50 backdrop-blur-md text-white px-5 py-2.5 rounded-lg text-xl font-medium shadow-2xl">
+            {Math.round((isMuted ? 0 : volume) * 100)}%
+          </div>
+          <div className="w-24 h-24 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-2xl">
+            {isMuted || volume === 0 ? <VolumeX size={48} /> : volume < 0.33 ? <Volume size={48} /> : volume < 0.66 ? <Volume1 size={48} /> : <Volume2 size={48} />}
+          </div>
+        </div>
+      )}
 
       {/* Up Next Popup */}
       {showUpNextPopup && (
@@ -547,18 +575,7 @@ export default function Player() {
         </div>
 
         {/* Center Controls (Play/Pause) */}
-        <div className={`flex items-center justify-center gap-6 flex-1 pointer-events-none transition-all duration-300 ${showControls || !isPlaying ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}>
-          <button 
-            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-            className="w-16 h-16 sm:w-20 sm:h-20 bg-cyan-500/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.3)] hover:scale-110 hover:bg-cyan-500/30 transition-all pointer-events-auto group"
-          >
-            {isPlaying ? (
-              <Pause className="text-cyan-50 group-hover:text-white transition-colors w-8 h-8 sm:w-10 sm:h-10" />
-            ) : (
-              <Play className="text-cyan-50 translate-x-1 group-hover:text-white transition-colors w-8 h-8 sm:w-10 sm:h-10" />
-            )}
-          </button>
-        </div>
+        <div className="flex-1 pointer-events-none"></div>
 
         {/* Bottom Control Bar */}
         <div className="bg-gradient-to-t from-black/90 via-black/60 to-transparent pt-12 pb-4 px-6 pointer-events-auto">
@@ -609,9 +626,9 @@ export default function Player() {
               
               <div className="hidden sm:flex items-center gap-2 group/volume relative ml-2">
                 <button onClick={toggleMute} className="hover:text-cyan-400 transition-colors">
-                  {isMuted || volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  {isMuted || volume === 0 ? <VolumeX size={20} /> : volume < 0.33 ? <Volume size={20} /> : volume < 0.66 ? <Volume1 size={20} /> : <Volume2 size={20} />}
                 </button>
-                <div className="w-0 overflow-hidden group-hover/volume:w-24 transition-all duration-300 flex items-center">
+                <div className={`overflow-hidden transition-all duration-300 flex items-center ${showVolumePopup ? 'w-24' : 'w-0 group-hover/volume:w-24'}`}>
                   <input 
                     type="range"
                     min={0}
@@ -622,7 +639,7 @@ export default function Player() {
                     className="w-20 ml-2 h-1.5 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-cyan-400"
                   />
                 </div>
-                <span className="text-xs font-medium w-9 tabular-nums text-gray-400 hidden group-hover/volume:block">
+                <span className={`text-xs font-medium w-9 tabular-nums text-gray-400 ${showVolumePopup ? 'block' : 'hidden group-hover/volume:block'}`}>
                   {Math.round((isMuted ? 0 : volume) * 100)}%
                 </span>
               </div>

@@ -208,29 +208,31 @@ export default function Sidebar() {
                               key={item.id}
                               id={`sidebar-item-${item.id}`}
                               onClick={() => setSelectedItemId(item.id)}
-                              className={`w-full flex items-start p-3 gap-3 transition-all text-left relative group overflow-hidden
-                                ${isSelected ? 'bg-blue-600/10' : 'hover:bg-gray-800/50'}
+                              className={`w-full flex items-center py-3 pl-2 pr-4 transition-all text-left relative group overflow-hidden border-b border-gray-800/30
+                                ${isSelected ? 'bg-cyan-900/10' : 'hover:bg-gray-800/50'}
                               `}
                             >
                               {isSelected && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r-md"></div>
+                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-cyan-500"></div>
                               )}
                               
-                              <div className="flex-shrink-0 mt-0.5">
+                              {/* Type/Status Icon */}
+                              <div className="flex-shrink-0 w-10 flex justify-center">
                                 {item.type === 'video' ? (
                                   isCompleted ? (
                                     <CheckCircle2 size={18} className="text-green-500" />
                                   ) : (
-                                    <PlayCircle size={18} className="text-gray-500 group-hover:text-gray-400" />
+                                    <Circle size={18} className={isSelected ? "text-cyan-400" : "text-gray-400 group-hover:text-gray-300"} />
                                   )
                                 ) : (
-                                  <FileText size={18} className="text-red-400 group-hover:text-red-300" />
+                                  <FileText size={18} className="text-rose-400/80 group-hover:text-rose-400" />
                                 )}
                               </div>
                               
-                              <div className="flex-1 min-w-0">
-                                <p className={`text-sm leading-tight line-clamp-2 ${isSelected ? 'text-blue-400 font-medium' : 'text-gray-300'}`}>
-                                  {item.name}
+                              {/* Content */}
+                              <div className="flex-1 min-w-0 pr-2">
+                                <p className={`text-sm leading-tight line-clamp-2 ${isSelected ? 'text-cyan-400 font-medium' : 'text-gray-300 group-hover:text-gray-200'}`}>
+                                  {item.name.replace(/\.[^/.]+$/, '')}
                                 </p>
                                 <div className="flex items-center gap-3 mt-1.5">
                                   <div className="flex items-center gap-1.5 text-xs text-gray-500">
@@ -246,10 +248,13 @@ export default function Sidebar() {
                                 </div>
                               </div>
                               
-                              {item.type === 'video' && progressPercent > 0 && (
-                                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-800">
+                              {/* Status Icon (Removed per request) */}
+                              
+                              {/* Progress Bar (Bottom) */}
+                              {item.type === 'video' && progressPercent > 0 && !isCompleted && (
+                                <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gray-800/30">
                                   <div 
-                                    className={`h-full ${isCompleted ? 'bg-green-500' : 'bg-blue-500'} transition-all duration-300`} 
+                                    className="h-full bg-cyan-500 transition-all duration-300 shadow-[0_0_8px_rgba(6,182,212,0.6)]" 
                                     style={{ width: `${Math.min(100, progressPercent)}%` }}
                                   />
                                 </div>

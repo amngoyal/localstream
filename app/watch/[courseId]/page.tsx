@@ -6,7 +6,8 @@ import { useCourseStore } from '../../lib/courseStore';
 import { parseDirectory, extractDurationsInBackground } from '../../lib/fileSystem';
 import { getSavedCourses } from '../../lib/idb';
 import Sidebar from '../../components/Sidebar';
-import Player from '../../components/Player';
+import dynamic from 'next/dynamic';
+const Player = dynamic(() => import('../../components/Player'), { ssr: false });
 import Dashboard from '../../components/Dashboard';
 
 export default function WatchPage() {

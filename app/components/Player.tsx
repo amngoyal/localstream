@@ -37,6 +37,7 @@ export default function Player() {
   const [pdfScale, setPdfScale] = useState(1.0);
   const [showControls, setShowControls] = useState(true);
   const [isUpNextDismissed, setIsUpNextDismissed] = useState(false);
+  const [showRemainingTime, setShowRemainingTime] = useState(false);
 
   // Find selected item
   let selectedItem: CourseItem | null = null;
@@ -95,6 +96,7 @@ export default function Player() {
     setNumPages(null);
     setPageNumber(1);
     setPdfScale(1.0);
+    setIsPlaying(false);
     if (!selectedItem) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setObjectUrl(null);
@@ -290,7 +292,7 @@ export default function Player() {
   // Custom Controls Functions
   const togglePlay = () => {
     if (!videoRef.current) return;
-    if (isPlaying) videoRef.current.pause();
+    if (!videoRef.current.paused) videoRef.current.pause();
     else videoRef.current.play();
   };
 
@@ -476,6 +478,7 @@ export default function Player() {
             ref={videoRef}
             src={objectUrl}
             controls={false}
+            autoPlay
             className="w-full h-full object-contain cursor-pointer"
             controlsList="nodownload"
             onClick={togglePlay}
@@ -543,18 +546,8 @@ export default function Player() {
           </div>
         </div>
 
-        {/* Center Controls (Play/Pause, 10s Rewind, 10s Forward) */}
-        <div className={`flex items-center justify-center gap-6 sm:gap-12 md:gap-16 flex-1 pointer-events-none transition-all duration-300 ${showControls || !isPlaying ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}>
-          
-          <button 
-            onClick={(e) => { e.stopPropagation(); skipBackward(); }}
-            className="w-12 h-12 sm:w-14 sm:h-14 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
-            title="Rewind 10s"
-          >
-            <RotateCcw className="text-white group-hover:text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
-            <span className="absolute text-[8px] sm:text-[9px] font-bold text-white group-hover:text-cyan-400 mt-1">10</span>
-          </button>
-
+        {/* Center Controls (Play/Pause) */}
+        <div className={`flex items-center justify-center gap-6 flex-1 pointer-events-none transition-all duration-300 ${showControls || !isPlaying ? 'scale-100 opacity-100' : 'scale-110 opacity-0'}`}>
           <button 
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             className="w-16 h-16 sm:w-20 sm:h-20 bg-cyan-500/20 backdrop-blur-md rounded-full flex items-center justify-center border-2 border-cyan-400 shadow-[0_0_40px_rgba(34,211,238,0.3)] hover:scale-110 hover:bg-cyan-500/30 transition-all pointer-events-auto group"
@@ -564,15 +557,6 @@ export default function Player() {
             ) : (
               <Play className="text-cyan-50 translate-x-1 group-hover:text-white transition-colors w-8 h-8 sm:w-10 sm:h-10" />
             )}
-          </button>
-
-          <button 
-            onClick={(e) => { e.stopPropagation(); skipForward(); }}
-            className="w-12 h-12 sm:w-14 sm:h-14 bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center border border-white/10 hover:bg-cyan-500/20 hover:border-cyan-400/50 hover:scale-110 transition-all pointer-events-auto group relative"
-            title="Forward 10s"
-          >
-            <RotateCw className="text-white group-hover:text-cyan-400 w-5 h-5 sm:w-6 sm:h-6" />
-            <span className="absolute text-[8px] sm:text-[9px] font-bold text-white group-hover:text-cyan-400 mt-1">10</span>
           </button>
         </div>
 
@@ -599,26 +583,28 @@ export default function Player() {
           </div>
 
           <div className="flex items-center justify-between mt-2 text-gray-200">
-            <div className="flex items-center gap-4">
-              <button onClick={togglePlay} className="hover:text-cyan-400 transition-colors">
+            <div className="flex items-center gap-4 sm:gap-5">
+              
+              <button 
+                onClick={(e) => { e.stopPropagation(); skipBackward(); }} 
+                className="hover:text-cyan-400 transition-colors opacity-80 hover:opacity-100 flex items-center justify-center relative" 
+                title="Rewind 10s"
+              >
+                <RotateCcw size={20} />
+                <span className="absolute text-[8px] font-bold mt-0.5">10</span>
+              </button>
+
+              <button onClick={togglePlay} className="hover:text-cyan-400 transition-transform scale-110 hover:scale-125 transform mx-1">
                 {isPlaying ? <Pause size={24} /> : <Play size={24} />}
               </button>
-              {/* Bottom bar prev/next item */}
+              
               <button 
-                onClick={() => prevItem && setSelectedItemId(prevItem.id)}
-                disabled={!prevItem}
-                className={`transition-colors flex items-center justify-center ${prevItem ? 'hover:text-cyan-400 opacity-80 hover:opacity-100' : 'opacity-40 cursor-not-allowed'}`}
-                title="Previous Item"
+                onClick={(e) => { e.stopPropagation(); skipForward(); }} 
+                className="hover:text-cyan-400 transition-colors opacity-80 hover:opacity-100 flex items-center justify-center relative" 
+                title="Forward 10s"
               >
-                <SkipBack size={20} />
-              </button>
-              <button 
-                onClick={() => nextItem && setSelectedItemId(nextItem.id)}
-                disabled={!nextItem}
-                className={`transition-colors flex items-center justify-center ${nextItem ? 'hover:text-cyan-400 opacity-80 hover:opacity-100' : 'opacity-40 cursor-not-allowed'}`}
-                title="Next Item"
-              >
-                <SkipForward size={20} />
+                <RotateCw size={20} />
+                <span className="absolute text-[8px] font-bold mt-0.5">10</span>
               </button>
               
               <div className="hidden sm:flex items-center gap-2 group/volume relative ml-2">
@@ -642,9 +628,32 @@ export default function Player() {
               </div>
             </div>
 
-            <div className="flex items-center gap-6">
-              <div className="text-sm font-medium tabular-nums text-gray-300 mr-2">
-                {formatTime(currentTime)} <span className="text-gray-500 mx-1">/</span> {formatTime(duration)}
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div 
+                className="text-sm font-medium tabular-nums text-gray-300 cursor-pointer select-none hover:text-cyan-400 transition-colors"
+                onClick={() => setShowRemainingTime(!showRemainingTime)}
+                title="Toggle Time Display"
+              >
+                {formatTime(currentTime)} <span className="text-gray-500 mx-1">/</span> {showRemainingTime ? `-${formatTime(Math.max(0, duration - currentTime))}` : formatTime(duration)}
+              </div>
+
+              <div className="flex items-center gap-3 border-l border-gray-600/50 pl-4 sm:pl-6">
+                <button 
+                  onClick={() => prevItem && setSelectedItemId(prevItem.id)}
+                  disabled={!prevItem}
+                  className={`transition-colors flex items-center justify-center ${prevItem ? 'hover:text-cyan-400 opacity-80 hover:opacity-100' : 'opacity-40 cursor-not-allowed'}`}
+                  title="Previous Item"
+                >
+                  <SkipBack size={18} />
+                </button>
+                <button 
+                  onClick={() => nextItem && setSelectedItemId(nextItem.id)}
+                  disabled={!nextItem}
+                  className={`transition-colors flex items-center justify-center ${nextItem ? 'hover:text-cyan-400 opacity-80 hover:opacity-100' : 'opacity-40 cursor-not-allowed'}`}
+                  title="Next Item"
+                >
+                  <SkipForward size={18} />
+                </button>
               </div>
 
               <div className="relative group/speed">
